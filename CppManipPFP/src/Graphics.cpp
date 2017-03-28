@@ -8,6 +8,13 @@
 #include <GL/glut.h>
 #endif
 
+#include <string>
+using std::string;
+
+#include <sstream>
+using std::stringstream;
+
+
 Graphics *m_graphics = NULL;
 
 Graphics::Graphics(const int nrLinks, const double linkLength) 
@@ -160,7 +167,97 @@ void Graphics::HandleEventOnDisplay(void)
 	DrawCircle2D(m_simulator.GetObstacleCenterX(i), 
 		     m_simulator.GetObstacleCenterY(i), 
 		     m_simulator.GetObstacleRadius(i));
+
+    // ================================================
+    // MY DEBUG CODE
+    // ================================================
+   
+    glLineWidth(1.0);
+    // draw vertical lines
+    glColor3f(0.7, 0.7, 0.7);
+    for (int i = -22; i <= 22; ++i) {
+        if ( i % 5 == 0)
+            glColor3f(0.2, 0.2, 0.2);
+        else
+            glColor3f(0.7, 0.7, 0.7);
+        glBegin(GL_LINES);
+        glVertex2i(i, 14);
+        glVertex2i(i, -14);
+        glEnd();
+    }
     
+    // draw horizontal lines
+    glColor3f(0.7, 0.7, 0.7);
+    for (int i = -14; i <= 14; ++i) {
+        if (i % 5 == 0)
+            glColor3f(0.2, 0.2, 0.2);
+        else
+            glColor3f(0.7, 0.7, 0.7);
+        glBegin(GL_LINES);
+        glVertex2i(22, i);
+        glVertex2i(-22, i);
+        glEnd();
+    }
+    
+    // darker / thicker on axis
+    glColor3f(0.0, 0.0, 0.0);
+    glLineWidth(2.0);
+    glBegin(GL_LINES);
+    glVertex2i(-22, 0);
+    glVertex2i(22, 0);
+    glEnd();
+    glBegin(GL_LINES);
+    glVertex2i(0, 14);
+    glVertex2i(0, -14);
+    glEnd();
+    
+    // label vertical lines
+    //const unsigned char text[] = "12345";
+    glColor3f(0.0, 0.0, 0.0);
+    for (int i = -20; i <= 20; i += 5) {
+        stringstream buf;
+        string text;
+        buf << i;
+        text = buf.str();
+        glPushMatrix();
+        glTranslated(i, 13, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+        glPushMatrix();
+        glTranslated(i, -14, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+        
+    }
+    
+    // label horizontal lines
+    //const unsigned char text[] = "12345";
+    glColor3f(0.0, 0.0, 0.0);
+    for (int i = -10; i <= 10; i += 5) {
+        stringstream buf;
+        string text;
+        buf << i;
+        text = buf.str();
+        glPushMatrix();
+        glTranslated(21, i, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+        glPushMatrix();
+        glTranslated(-22, i, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+        
+    }
+    glLineWidth(1.0);
+
 
     
 }

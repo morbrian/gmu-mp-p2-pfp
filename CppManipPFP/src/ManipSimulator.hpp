@@ -20,7 +20,8 @@ public:
     ManipSimulator(void);
     
     ~ManipSimulator(void);
-    
+
+
     double GetGoalCenterX(void) const
     {
 	return m_circles[0];	

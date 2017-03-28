@@ -3,6 +3,22 @@
 
 #include "ManipSimulator.hpp"
 
+const double SCALE_ATT = 1.0;           // scale factor for attraction
+const double SCALE_REP = 10.0;          // scale factor for repulsion
+const double SCALE_THETA = 0.01;        // scaling gradient to small increment
+const double SENSOR_RANGE = 10.0;       // distance when obstacles matter
+const double TARGET_RADIUS = 2.0;       // pseudo goal radius
+const double STUCK_BOUNDS = 1.0;        // bounding size to decide stuck
+const int STUCK_THRESHHOLD = 400;       // how many moves the robot can make in
+                                        // the same bounding box before "stuck"
+
+// record of local progress in any direction
+struct MotionTrack
+{
+    int stuck_meter;
+    Point marker;
+};
+
 class ManipPlanner
 {
 public:
@@ -35,10 +51,17 @@ public:
  */
     void ConfigurationMove(double allLinksDeltaTheta[]);
     
-        
 protected:    
-    
     ManipSimulator  *m_manipSimulator;
+
+    // location of last real goal, so we know if we should reset counters
+    Point true_goal;
+    
+    // local progress tracker, to detect when we are stuck in one area
+    MotionTrack track;
+
+    // the link id that wants to point toward goal
+    int att_link;
 };
 
 #endif

@@ -1,5 +1,11 @@
 #include "Graphics.hpp"
 
+#include <string>
+using std::string;
+
+#include <sstream>
+using std::stringstream;
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #elif defined _WIN32
@@ -151,6 +157,120 @@ void Graphics::HandleEventOnDisplay(void)
 	DrawCircle2D(m_simulator.m_circles[3 + 3 * i], 
 		     m_simulator.m_circles[4 + 3 * i], 
 		     m_simulator.m_circles[5 + 3 * i]);
+    
+    // ================================================
+    // MY DEBUG CODE
+    // ================================================
+    
+    
+    //draw way points
+    vector<Point> way_points = m_planner->GetWayPoints();
+    vector<Point>::iterator wp = way_points.begin();
+    vector<Point>::iterator wp_end = way_points.end();
+    glColor3f(1.0, 0.0, 1.0);
+    for ( ; wp != wp_end; ++wp)
+        DrawCircle2D(wp->m_x, wp->m_y, m_simulator.GetGoalRadius());
+    
+    glLineWidth(2.0);
+    
+    // draw angle idicator on robot, since i cant tell where the "front" is
+    double radians = m_simulator.GetRobotTheta();
+    double front[] =
+    {
+        4.0 * cos(radians) + m_simulator.GetRobotX(),
+        4.0 * sin(radians) + m_simulator.GetRobotY()
+    };
+    glBegin(GL_LINES);
+    glVertex2d(m_simulator.GetRobotX(), m_simulator.GetRobotY());
+    glVertex2d(front[0], front[1]);
+    glEnd();
+
+    glLineWidth(1.0);
+    // draw vertical lines
+    glColor3f(0.7, 0.7, 0.7);
+    for (int i = -22; i <= 22; ++i) {
+        if ( i % 5 == 0)
+            glColor3f(0.2, 0.2, 0.2);
+        else
+            glColor3f(0.7, 0.7, 0.7);
+        glBegin(GL_LINES);
+        glVertex2i(i, 14);
+        glVertex2i(i, -14);
+        glEnd();
+    }
+    
+    // draw horizontal lines
+    glColor3f(0.7, 0.7, 0.7);
+    for (int i = -14; i <= 14; ++i) {
+        if (i % 5 == 0)
+            glColor3f(0.2, 0.2, 0.2);
+        else
+            glColor3f(0.7, 0.7, 0.7);
+        glBegin(GL_LINES);
+        glVertex2i(22, i);
+        glVertex2i(-22, i);
+        glEnd();
+    }
+    
+    // darker / thicker on axis
+    glColor3f(0.0, 0.0, 0.0);
+    glLineWidth(2.0);
+    glBegin(GL_LINES);
+    glVertex2i(-22, 0);
+    glVertex2i(22, 0);
+    glEnd();
+    glBegin(GL_LINES);
+    glVertex2i(0, 14);
+    glVertex2i(0, -14);
+    glEnd();
+    
+    // label vertical lines
+    //const unsigned char text[] = "12345";
+    glColor3f(0.0, 0.0, 0.0);
+    for (int i = -20; i <= 20; i += 5) {
+        stringstream buf;
+        string text;
+        buf << i;
+        text = buf.str();
+        glPushMatrix();
+        glTranslated(i, 13, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+        glPushMatrix();
+        glTranslated(i, -14, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+
+    }
+    
+    // label horizontal lines
+    //const unsigned char text[] = "12345";
+    glColor3f(0.0, 0.0, 0.0);
+    for (int i = -10; i <= 10; i += 5) {
+        stringstream buf;
+        string text;
+        buf << i;
+        text = buf.str();
+        glPushMatrix();
+        glTranslated(21, i, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+        glPushMatrix();
+        glTranslated(-22, i, 0.0);
+        glScaled(.005, .005, 0.0);
+        for (int j = 0; j < text.length(); ++j)
+            glutStrokeCharacter(GLUT_STROKE_ROMAN, text[j]);
+        glPopMatrix();
+        
+    }
+    glLineWidth(1.0);
+   
 }
 
 
